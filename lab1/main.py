@@ -1,8 +1,10 @@
-import lab1.method.gradient_descent as gd
 import numpy as np
+import lab1.method.gradient_descent as gd
+import lab1.plot.plotter as plotter
+
 
 def f(x):
-    return 2 * (x ** 2) + 2 * x + 1
+    return 2 * (x ** 2) + 5 * x + 1
 
 
 def grad(x):
@@ -10,4 +12,5 @@ def grad(x):
     return (f(x[:, np.newaxis] + h * np.eye(1)) - f(x[:, np.newaxis] - h * np.eye(1))) / (2 * h)
 
 
-gd.gradient_descent(f, grad)
+points = gd.gradient_descent(f, grad)
+plotter.points_over_function(points, f)
