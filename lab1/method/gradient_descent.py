@@ -1,12 +1,15 @@
 import numpy as np
 
 
-def gradient_descent(f, grad, n, start, lr=0.2, epoch=30):
+def gradient_descent(f, grad, start, eps=0.01, lr=0.2, max_iter=10000):
     x = np.array(start)
 
-    points = np.zeros((epoch, n))
-    points[0] = x
-    for i in range(1, epoch):
+    points = [x]
+    i = 1
+    while i < max_iter:
         x = x - lr * grad(x)
-        points[i] = x
-    return points
+        points.append(x)
+        if abs(f(points[i]) - f(points[i - 1])) <= eps:
+            break
+        i += 1
+    return np.asarray(points)

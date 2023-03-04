@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def dichotomy_method(f, a, b):
     epoch = 30
     eps = 0.2
