@@ -1,6 +1,7 @@
 import numpy as np
 import lab1.method.gradient_descent as gd
 import lab1.plot.plotter as plotter
+import lab1.method.func_generation as fg
 
 
 def f(x):
@@ -12,5 +13,8 @@ def grad(x):
     return (f(x[:, np.newaxis] + h * np.eye(1)) - f(x[:, np.newaxis] - h * np.eye(1))) / (2 * h)
 
 
-points = gd.gradient_descent(f, grad)
-plotter.points_over_function(points, f)
+# points = gd.gradient_descent(f, grad)
+# plotter.points_over_function(points, f)
+
+print(fg.generate_func(5, 3))
+print(np.linalg.cond(fg.generate_func(5, 3)))
