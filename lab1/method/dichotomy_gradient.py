@@ -10,6 +10,7 @@ def dichotomy_gradient(f, grad, start, eps_f=0.01, eps_r=0.001, lr=0.2, max_iter
         b = lr
         d = grad(x)
         while abs(b - a) > eps_r:
+            c = (a + b) / 2
             if f(x - (c * d + eps_r)) < f(x - (c * d - eps_r)):
                 a = c
             else:
