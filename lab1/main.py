@@ -2,7 +2,6 @@ import numpy as np
 import lab1.method.gradient_descent as gd
 import lab1.method.dichotomy_gradient as dg
 import lab1.plot.plotter as plotter
-import lab1.method.fibonacci_gradient as fg
 
 
 def f(x):
