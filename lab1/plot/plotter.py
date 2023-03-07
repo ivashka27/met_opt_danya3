@@ -28,5 +28,5 @@ def points_over_contour(points, f, levels=30):
     ax1.plot(f(points.T))
     ax1.grid()
     ax2.contour(X, Y, f(np.stack((X, Y))), levels=levels)
-    ax2.plot(points[:, 0], points[:, 1], 'o-')
-    plt.show()
+    ax2.plot(points[:, 0], points[:, 1], 'o-', )
+    return plt
