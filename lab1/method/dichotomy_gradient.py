@@ -21,5 +21,4 @@ def dichotomy_gradient(f, grad, start, eps_f=0.01, eps_r=0.001, lr=0.2, max_iter
         points.append(x)
         if abs(f(points[i]) - f(points[i - 1])) <= eps_f:
             break
-        i += 1
     return np.asarray(points)

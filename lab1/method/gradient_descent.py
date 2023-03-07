@@ -10,5 +10,4 @@ def gradient_descent(f, grad, start, eps=0.01, lr=0.2, max_iter=10000):
         points.append(x)
         if abs(f(points[i]) - f(points[i - 1])) <= eps:
             break
-        i += 1
     return np.asarray(points)

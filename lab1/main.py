@@ -5,7 +5,7 @@ import lab1.plot.plotter as plotter
 
 
 def f(x):
-    return 10 * (x[0] ** 2 + x[1] ** 2)
+    return 10 * (x[1] - x[0]) ** 2 + (1 - x[0]) ** 2
 
 
 def grad(x):
@@ -13,7 +13,11 @@ def grad(x):
     return (f(x[:, np.newaxis] + h * np.eye(2)) - f(x[:, np.newaxis] - h * np.eye(2))) / (2 * h)
 
 
-points = gd.gradient_descent(f, grad, [-0.7, 1.0], 1e-4, 0.08)
+#start = 10 * np.random.rand(1, 2)[0]
+start = [1, -2]
+print(start)
+points = gd.gradient_descent(f, grad, start, 1e-6, 0.01, 100000)
+# print(f(points.T))
 plotter.three_dim_plot(f, 100)
 pl1 = plotter.points_over_contour(points, f)
 pl1.title("gradient descent")
@@ -21,8 +25,10 @@ pl1.show()
 print(len(points))
 print(points[-1], f(points[-1]))
 
-points2 = dg.dichotomy_gradient(f, grad, [-0.7, 1.0], 1e-4, 1e-3, 0.08)
-plotter.points_over_contour(points2, f).show()
+points2 = dg.dichotomy_gradient(f, grad, start, 1e-6, 1e-5, 200)
+pl2 = plotter.points_over_contour(points2, f)
+pl2.title("dichotomy descent")
+pl2.show()
 print(len(points2))
 print(points2[-1], f(points2[-1]))
 
