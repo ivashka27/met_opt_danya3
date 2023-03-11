@@ -37,15 +37,18 @@ def points_over_contour(points, f, name="line", levels=30):
     X, Y = np.meshgrid(t, t)
     fig, ax = plt.subplots()
     ax.contour(X, Y, f(np.stack((X, Y))), levels=levels)
-    l, = ax.plot(points[:, 0], points[:, 1], 'o-')
+    l, = ax.plot(points[:, 0], points[:, 1], 'o-', markersize=5)
     ax.plot(points[-1, 0], points[-1, 1], 'x', markersize=10)
     return ax, l
 
 
-def multiple_points_over_contour(points1, points2, f, lr, name1="gradient descent", name2="dichotomy", levels=30):
+def multiple_points_over_contour(points1, points2, points3, f, lr, name1="gradient descent", name2="dichotomy",
+                                 name3="wolfe", levels=30):
     (ax, l1) = points_over_contour(points1, f, name1, levels)
-    l2, = ax.plot(points2[:, 0], points2[:, 1], 'o-', color="r")
+    l2, = ax.plot(points2[:, 0], points2[:, 1], 'o-', markersize=5, color="r", alpha=0.8)
     ax.plot(points2[-1, 0], points2[-1, 1], 'x', color="r", markersize=10)
-    ax.legend((l1, l2), (name1, name2), loc='upper right', shadow=True)
+    l3, = ax.plot(points3[:, 0], points3[:, 1], 'o-', markersize=5, color="yellowgreen", alpha=0.7)
+    ax.plot(points3[-1, 0], points3[-1, 1], 'x', color="yellowgreen", markersize=10)
+    ax.legend((l1, l2, l3), (name1, name2, name3), loc='upper right', shadow=True)
     plt.title("start: {}, learning rate: {}".format(points1[0], lr))
     return plt
