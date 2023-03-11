@@ -11,6 +11,7 @@ N = 2
 
 matrix = fg.generate_func(N, 20)
 
+print(matrix)
 
 def multiply(x, m, n):
     v = np.zeros(n, dtype=object)
@@ -37,7 +38,7 @@ def grad(x):
 start = 10 * np.random.rand(1, N)[0]
 
 print("start:", start)
-points = gd.gradient_descent(f, grad, start, 1e-6, 0.04, 100000)
+points = gd.gradient_descent(f, grad, start, 1e-6, 0.04, 100000)[0]
 
 plotter.three_dim_plot(f, 100)
 pl1 = plotter.points_over_contour(points, f)
@@ -45,7 +46,7 @@ pl1.title("gradient descent")
 pl1.show()
 print(points[-1], f(points[-1]))
 
-points2 = dg.dichotomy_gradient(f, grad, start, 1e-6, 1e-3, 1)
+points2 = dg.dichotomy_gradient(f, grad, start, 1e-6, 1e-3, 1)[0]
 pl2 = plotter.points_over_contour(points2, f)
 pl2.title("dichotomy descent")
 pl2.show()
