@@ -1,5 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from random import uniform
+
+
+def generate_n_dots(n, dimensions=2):
+    result = []
+    for _ in range(n):
+        i = []
+        for _ in range(dimensions):
+            i.append(uniform(-1, 1))
+        result.append(i)
+    return result
 
 
 def points_over_function(points, f):
