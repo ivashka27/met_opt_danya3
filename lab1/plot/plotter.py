@@ -52,3 +52,14 @@ def multiple_points_over_contour(points1, points2, points3, f, lr, name1="gradie
     ax.legend((l1, l2, l3), (name1, name2, name3), loc='upper right', shadow=True)
     plt.title("start: {}, learning rate: {}".format(points1[0], lr))
     return plt
+
+
+def plot_by_array(p_array, start, name, name1="gradient descent", name2="dichotomy", name3="wolfe"):
+    l1, = plt.plot(p_array[0][:, 0], p_array[0][:, 1])
+    l2, = plt.plot(p_array[1][:, 0], p_array[1][:, 1], color="r", alpha=0.8)
+    l3, = plt.plot(p_array[2][:, 0], p_array[2][:, 1], color="yellowgreen", alpha=0.7)
+    plt.legend((l1, l2, l3), (name1, name2, name3), loc='upper right', shadow=True)
+    plt.xlabel("scaling")
+    plt.ylabel(name)
+    plt.title("start: {}".format(start))
+    return plt
