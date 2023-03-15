@@ -67,8 +67,8 @@ def plot_by_three_coordinates(x, y, z):
     ax.yaxis.set_major_locator(MaxNLocator(6))
     ax.zaxis.set_major_locator(MaxNLocator(5))
 
-    ax.set_xlabel('N')
-    ax.set_ylabel('K')
+    ax.set_xlabel('K')
+    ax.set_ylabel('N')
     ax.set_zlabel('T(N, K)')
 
     fig.tight_layout()
