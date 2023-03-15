@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import MaxNLocator
 from random import uniform
 
 
@@ -52,6 +54,27 @@ def multiple_points_over_contour(points1, points2, points3, f, lr, name1="gradie
     ax.legend((l1, l2, l3), (name1, name2, name3), loc='upper right', shadow=True)
     plt.title("start: {}, learning rate: {}".format(points1[0], lr))
     return plt
+
+
+def plot_by_three_coordinates(x, y, z):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    surf = ax.plot_trisurf(x, y, z)
+    # fig.colorbar(surf)
+
+    ax.xaxis.set_major_locator(MaxNLocator(5))
+    ax.yaxis.set_major_locator(MaxNLocator(6))
+    ax.zaxis.set_major_locator(MaxNLocator(5))
+
+    ax.set_xlabel('N')
+    ax.set_ylabel('K')
+    ax.set_zlabel('T(N, K)')
+
+    fig.tight_layout()
+
+    plt.show()
+
 
 
 def plot_by_array(p_array, start, name, name1="gradient descent", name2="dichotomy", name3="wolfe"):
