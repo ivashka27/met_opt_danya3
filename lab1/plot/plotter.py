@@ -76,6 +76,14 @@ def plot_by_three_coordinates(x, y, z):
     plt.show()
 
 
+def plot_by_two_coordinates(x, y, name1:str):
+    l1 = plt.plot(x, y)
+    plt.legend(l1, "gradient descent", loc='upper right', shadow=True)
+    plt.xlabel(name1)
+    plt.ylabel("gradient descent calculations")
+    plt.title("T(" + name1 + ")")
+    return plt
+
 
 def plot_by_array(p_array, start, name, name1="gradient descent", name2="dichotomy", name3="wolfe"):
     l1, = plt.plot(p_array[0][:, 0], p_array[0][:, 1])
