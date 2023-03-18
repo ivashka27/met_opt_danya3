@@ -33,7 +33,7 @@ def three_dim_plot(f, sz=2):
     plt.show()
 
 
-def points_over_contour(points, f, name="line", levels=30):
+def points_over_contour(points, f, levels=30):
     a = max(-np.min(points), np.max(points)) + 0.1
     t = np.linspace(-a, a, 100)
     X, Y = np.meshgrid(t, t)
@@ -45,8 +45,8 @@ def points_over_contour(points, f, name="line", levels=30):
 
 
 def multiple_points_over_contour(points1, points2, points3, f, lr, name1="gradient descent", name2="dichotomy",
-                                 name3="wolfe", levels=30):
-    (ax, l1) = points_over_contour(points1, f, name1, levels)
+                                 name3="wolfe"):
+    (ax, l1) = points_over_contour(points1, f)
     l2, = ax.plot(points2[:, 0], points2[:, 1], 'o-', markersize=5, color="r", alpha=0.8)
     ax.plot(points2[-1, 0], points2[-1, 1], 'x', color="r", markersize=10)
     l3, = ax.plot(points3[:, 0], points3[:, 1], 'o-', markersize=5, color="yellowgreen", alpha=0.7)
@@ -56,31 +56,11 @@ def multiple_points_over_contour(points1, points2, points3, f, lr, name1="gradie
     return plt
 
 
-def plot_by_three_coordinates(x, y, z):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    surf = ax.plot_trisurf(x, y, z)
-    # fig.colorbar(surf)
-
-    ax.xaxis.set_major_locator(MaxNLocator(5))
-    ax.yaxis.set_major_locator(MaxNLocator(6))
-    ax.zaxis.set_major_locator(MaxNLocator(5))
-
-    ax.set_xlabel('K')
-    ax.set_ylabel('N')
-    ax.set_zlabel('T(N, K)')
-
-    fig.tight_layout()
-
-    plt.show()
-
-
 def plot_by_two_coordinates(x, y, name, limit=False, graph_name="gradient descent calculations"):
-    l1, = plt.plot(x, y)
+    plt.plot(x, y)
     plt.xlabel(name)
     plt.ylabel(graph_name)
-    plt.title("T(" + name + ")")
+    plt.title(name)
     ax = plt.gca()
     if limit:
         ax.set_ylim([0, 600])
