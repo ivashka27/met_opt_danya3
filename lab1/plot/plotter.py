@@ -76,21 +76,23 @@ def plot_by_three_coordinates(x, y, z):
     plt.show()
 
 
-def plot_by_two_coordinates(x, y, name1:str):
-    l1 = plt.plot(x, y)
-    plt.legend(l1, "gradient descent", loc='upper right', shadow=True)
-    plt.xlabel(name1)
+def plot_by_two_coordinates(x, y, name, limit=False):
+    l1, = plt.plot(x, y)
+    plt.xlabel(name)
     plt.ylabel("gradient descent calculations")
-    plt.title("T(" + name1 + ")")
+    plt.title("T(" + name + ")")
+    ax = plt.gca()
+    if limit:
+        ax.set_ylim([0, 600])
     return plt
 
 
-def plot_by_array(p_array, start, name, name1="gradient descent", name2="dichotomy", name3="wolfe"):
+def plot_by_array(p_array, start, name_x, name_y, name1="gradient descent", name2="dichotomy", name3="wolfe"):
     l1, = plt.plot(p_array[0][:, 0], p_array[0][:, 1])
     l2, = plt.plot(p_array[1][:, 0], p_array[1][:, 1], color="r", alpha=0.8)
     l3, = plt.plot(p_array[2][:, 0], p_array[2][:, 1], color="yellowgreen", alpha=0.7)
     plt.legend((l1, l2, l3), (name1, name2, name3), loc='upper right', shadow=True)
-    plt.xlabel("scaling")
-    plt.ylabel(name)
+    plt.xlabel(name_x)
+    plt.ylabel(name_y)
     plt.title("start: {}".format(start))
     return plt

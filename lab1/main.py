@@ -33,10 +33,23 @@ def f(x):
 def grad(x):
     h = 1e-5
     n = N
+
+    print("main", (f(x[:, np.newaxis] + h * np.eye(n)) - f(x[:, np.newaxis] - h * np.eye(n))) / (2 * h))
+    print("new", grad_calculator(x, f, n))
     return (f(x[:, np.newaxis] + h * np.eye(n)) - f(x[:, np.newaxis] - h * np.eye(n))) / (2 * h)
 
+def grad_calculator(x, func, n):
+    h = 1e-5
+    res = []
+    for i in range(n):
+        delta = np.zeros(n)
+        delta[i] = h
+        res.append((func(x + delta) - func(x - delta)) / (2 * h))
+    return np.asarray(res)
 
-start = 10 * np.random.rand(1, N)[0]
+
+#start = 10 * np.random.rand(1, N)[0]
+start = [-1, 1]
 
 print("start:", start)
 (points1, g_cnt1, f_cnt1) = gd.gradient_descent(f, grad, start, 1e-6, 0.04, 100000)
