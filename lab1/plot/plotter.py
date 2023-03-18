@@ -76,10 +76,10 @@ def plot_by_three_coordinates(x, y, z):
     plt.show()
 
 
-def plot_by_two_coordinates(x, y, name, limit=False):
+def plot_by_two_coordinates(x, y, name, limit=False, graph_name="gradient descent calculations"):
     l1, = plt.plot(x, y)
     plt.xlabel(name)
-    plt.ylabel("gradient descent calculations")
+    plt.ylabel(graph_name)
     plt.title("T(" + name + ")")
     ax = plt.gca()
     if limit:
