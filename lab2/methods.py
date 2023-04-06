@@ -61,7 +61,7 @@ def sgd_adagrad(x, y, learning_rate=0.1, n_epochs=50, batch_size=1):
     return w
 
 
-def sgd_rmsprop(x, y, beta=0.99, eps=1e-6, learning_rate=0.1, n_epochs=50, batch_size=1):
+def sgd_rmsprop(x, y, beta=0.99, eps=1e-8, learning_rate=0.1, n_epochs=50, batch_size=1):
     n_samples, n_features = x.shape
     w = np.random.randn(n_features, 1)
     prev_s = 0
@@ -79,7 +79,7 @@ def sgd_rmsprop(x, y, beta=0.99, eps=1e-6, learning_rate=0.1, n_epochs=50, batch
     return w
 
 
-def sgd_adam(x, y, beta1=0.9, beta2=0.99, eps=1e-6, learning_rate=0.1, n_epochs=50, batch_size=1):
+def sgd_adam(x, y, beta1=0.9, beta2=0.99, eps=1e-8, learning_rate=0.1, n_epochs=50, batch_size=1):
     n_samples, n_features = x.shape
     w = np.random.randn(n_features, 1)
     prev_v = 0
