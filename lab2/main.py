@@ -6,7 +6,7 @@ np.random.seed(1212)
 X = np.random.rand(200, 1)
 y = 0 + 10 * X + np.random.randn(200, 1)
 
-learning_rate = 0.3
+learning_rate = methods.const_learning_rate
 n_epochs = 100
 batch_sizes = [1, 10, 20, 50]
 
