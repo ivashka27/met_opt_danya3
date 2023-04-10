@@ -33,7 +33,8 @@ def stochastic_gradient_descent(x, y, learning_rate=const_learning_rate, n_epoch
                                            learning_rate, n_epochs, batch_size)
 
 
-def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000):
+def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+                      trajectory=True):
     x = np.array(start)
 
     points = [x]
@@ -43,13 +44,18 @@ def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const
         v = gamma * prev_v + (1 - gamma) * gr
         prev_v = v
         x = x - learning_rate(epoch) * v
-        points.append(x)
+        if trajectory:
+            points.append(x)
         if np.linalg.norm(gr) < eps_g:
+            if not (trajectory):
+                points.append(x)
             break
+
     return np.asarray(points), len(points), 0
 
 
-def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000):
+def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+                 trajectory=True):
     x = np.array(start)
 
     points = [x]
@@ -59,13 +65,16 @@ def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_lear
         v = gamma * prev_v + (1 - gamma) * gr
         prev_v = v
         x = x - learning_rate(epoch) * v
-        points.append(x)
+        if trajectory:
+            points.append(x)
         if np.linalg.norm(gr) < eps_g:
+            if not (trajectory):
+                points.append(x)
             break
     return np.asarray(points), len(points), 0
 
 
-def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000):
+def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000, trajectory=True):
     x = np.array(start)
 
     points = [x]
@@ -74,13 +83,16 @@ def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, m
         gr = grad(x)
         gr_sum += np.diag(gr).dot(np.diag(gr))
         x = x - learning_rate(epoch) * gr / math.sqrt(gr_sum)
-        points.append(x)
+        if trajectory:
+            points.append(x)
         if np.linalg.norm(gr) < eps_g:
+            if not (trajectory):
+                points.append(x)
             break
     return np.asarray(points), len(points), 0
 
 
-def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000):
+def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000, trajectory=True):
     x = np.array(start)
 
     points = [x]
@@ -89,15 +101,18 @@ def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate
         gr = grad(x)
         s = beta * prev_s + (1 - beta) * (gr ** 2)
         x = x - learning_rate(epoch) * gr / np.sqrt(s + eps_f)
-        points.append(x)
+        if trajectory:
+            points.append(x)
         prev_s = s
         if np.linalg.norm(gr) < eps_g:
+            if not (trajectory):
+                points.append(x)
             break
     return np.asarray(points), len(points), 0
 
 
 def sgd_adam(f, grad, start, beta1=0.9, beta2=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate,
-             max_iter=10000):
+             max_iter=10000, trajectory=True):
     x = np.array(start)
 
     points = [x]
@@ -112,11 +127,14 @@ def sgd_adam(f, grad, start, beta1=0.9, beta2=0.99, eps_f=1e-8, eps_g=1e-6, lear
         v_sm = v / (1 - beta1_pw)
         s_sm = s / (1 - beta2_pw)
         x = x - learning_rate(epoch) * v_sm / np.sqrt(s_sm + eps_f)
-        points.append(x)
+        if trajectory:
+            points.append(x)
         beta1_pw *= beta1
         beta2_pw *= beta2
         prev_v = v
         prev_s = s
         if np.linalg.norm(gr) < eps_g:
+            if not (trajectory):
+                points.append(x)
             break
     return np.asarray(points), len(points), 0
