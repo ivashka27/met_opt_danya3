@@ -47,7 +47,7 @@ def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const
         if trajectory:
             points.append(x)
         if np.linalg.norm(gr) < eps_g:
-            if not (trajectory):
+            if not trajectory:
                 points.append(x)
             break
 
@@ -68,7 +68,7 @@ def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_lear
         if trajectory:
             points.append(x)
         if np.linalg.norm(gr) < eps_g:
-            if not (trajectory):
+            if not trajectory:
                 points.append(x)
             break
     return np.asarray(points), len(points), 0
@@ -81,31 +81,34 @@ def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, m
     gr_sum = 0
     for epoch in range(max_iter):
         gr = grad(x)
-        gr_sum += np.diag(gr).dot(np.diag(gr))
-        x = x - learning_rate(epoch) * gr / math.sqrt(gr_sum)
+        for i in range(0, len(gr)):
+            gr_sum += gr[i] * gr.T[i]
+        d = gr / math.sqrt(gr_sum)
+        x = x - learning_rate(epoch) *d
         if trajectory:
             points.append(x)
-        if np.linalg.norm(gr) < eps_g:
-            if not (trajectory):
+        if np.linalg.norm(d) < eps_g:
+            if not trajectory:
                 points.append(x)
             break
     return np.asarray(points), len(points), 0
 
 
-def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000, trajectory=True):
+def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+                trajectory=True):
     x = np.array(start)
 
     points = [x]
     prev_s = 0
     for epoch in range(max_iter):
         gr = grad(x)
-        s = beta * prev_s + (1 - beta) * (gr ** 2)
-        x = x - learning_rate(epoch) * gr / np.sqrt(s + eps_f)
+        s = beta * prev_s + (1 - beta) * (gr.dot(gr))
+        x = x - learning_rate(epoch) * gr / math.sqrt(s + eps_f)
         if trajectory:
             points.append(x)
         prev_s = s
         if np.linalg.norm(gr) < eps_g:
-            if not (trajectory):
+            if not trajectory:
                 points.append(x)
             break
     return np.asarray(points), len(points), 0
@@ -134,7 +137,7 @@ def sgd_adam(f, grad, start, beta1=0.9, beta2=0.99, eps_f=1e-8, eps_g=1e-6, lear
         prev_v = v
         prev_s = s
         if np.linalg.norm(gr) < eps_g:
-            if not (trajectory):
+            if not trajectory:
                 points.append(x)
             break
     return np.asarray(points), len(points), 0

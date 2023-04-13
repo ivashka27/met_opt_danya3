@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -6,6 +8,7 @@ from random import uniform
 
 
 def generate_n_dots(n, dimensions=2):
+    random.seed(12)
     result = []
     for _ in range(n):
         i = []
@@ -39,20 +42,39 @@ def points_over_contour(points, f, levels=30):
     X, Y = np.meshgrid(t, t)
     fig, ax = plt.subplots()
     ax.contour(X, Y, f(np.stack((X, Y))), levels=levels)
-    l, = ax.plot(points[:, 0], points[:, 1], 'o-', markersize=5)
+    l, = ax.plot(points[:, 0], points[:, 1], 'o-', markersize=5, alpha=0.8)
     ax.plot(points[-1, 0], points[-1, 1], 'x', markersize=10)
     return ax, l
 
 
-def multiple_points_over_contour(points1, points2, points3, f, lr, name1="gradient descent", name2="dichotomy",
-                                 name3="wolfe"):
+def multiple_points_over_contour(f, points1, points2=None, points3=None, points4=None, points5=None,
+                                 name1="gradient descent", name2="dichotomy",
+                                 name3="wolfe", name4=None, name5=None):
     (ax, l1) = points_over_contour(points1, f)
-    l2, = ax.plot(points2[:, 0], points2[:, 1], 'o-', markersize=5, color="r", alpha=0.8)
-    ax.plot(points2[-1, 0], points2[-1, 1], 'x', color="r", markersize=10)
-    l3, = ax.plot(points3[:, 0], points3[:, 1], 'o-', markersize=5, color="yellowgreen", alpha=0.7)
-    ax.plot(points3[-1, 0], points3[-1, 1], 'x', color="yellowgreen", markersize=10)
-    ax.legend((l1, l2, l3), (name1, name2, name3), loc='upper right', shadow=True)
-    plt.title("start: {}, learning rate: {}".format(points1[0], lr))
+    ls = [l1]
+    names = [name1]
+    if not (points2 is None):
+        l2, = ax.plot(points2[:, 0], points2[:, 1], 'o-', markersize=5, color="r", alpha=0.8)
+        ax.plot(points2[-1, 0], points2[-1, 1], 'x', color="r", markersize=10)
+        ls.append(l2)
+        names.append(name2)
+    if not (points3 is None):
+        l3, = ax.plot(points3[:, 0], points3[:, 1], 'o-', markersize=5, color="yellowgreen", alpha=0.7)
+        ax.plot(points3[-1, 0], points3[-1, 1], 'x', color="yellowgreen", markersize=10)
+        ls.append(l3)
+        names.append(name3)
+    if not (points4 is None):
+        l4, = ax.plot(points4[:, 0], points4[:, 1], 'o-', markersize=5, color="violet", alpha=0.7)
+        ax.plot(points4[-1, 0], points4[-1, 1], 'x', color="violet", markersize=10)
+        ls.append(l4)
+        names.append(name4)
+    if not (points5 is None):
+        l5, = ax.plot(points5[:, 0], points5[:, 1], 'o-', markersize=5, color="orange", alpha=0.7)
+        ax.plot(points5[-1, 0], points5[-1, 1], 'x', color="orange", markersize=10)
+        ls.append(l5)
+        names.append(name5)
+    ax.legend(ls, names, loc='upper right', shadow=True)
+    plt.title("start: {}".format(points1[0]))
     return plt
 
 

@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import methods
+import math
+from math import exp
 from lab1.plot import plotter
 
 
@@ -30,13 +32,16 @@ def show_plot(name, start, points, grad_calc, func_calc):
     plt.show()
 
 
-start = [-1, 2]
+start = [-10, 2]
 
 (points1, grad_calc1, func_calc1) = methods.sgd_with_momentum(f, grad, start, learning_rate=lambda epoch: 0.5)
 show_plot("Momentum", start, points1, grad_calc1, func_calc1)
 
 (points2, grad_calc2, func_calc2) = methods.sgd_nesterov(f, grad, start, learning_rate=lambda epoch: 0.5)
 show_plot("Nesterov", start, points2, grad_calc2, func_calc2)
+
+(points2, grad_calc2, func_calc2) = methods.sgd_adagrad(f, grad, start, learning_rate=lambda epoch: 0.5)
+show_plot("AdaGrad", start, points2, grad_calc2, func_calc2)
 
 (points3, grad_calc3, func_calc3) = methods.sgd_rmsprop(f, grad, start, learning_rate=lambda epoch: 0.5)
 show_plot("RMSprop", start, points3, grad_calc3, func_calc3)
