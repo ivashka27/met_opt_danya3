@@ -42,6 +42,24 @@ def stochastic_gradient_descent(x, y, learning_rate=const_learning_rate, eps=1e-
                                            learning_rate, eps, batch_size, max_iter)
 
 
+def gradient_descent(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+                      trajectory=True):
+    x = np.array(start)
+
+    points = [x]
+    for epoch in range(max_iter):
+        gr = grad(x)
+        x = x - learning_rate(epoch) * gr
+        if trajectory:
+            points.append(x)
+        if np.linalg.norm(gr) < eps_g:
+            if not trajectory:
+                points.append(x)
+            break
+
+    return np.asarray(points), len(points), 0
+
+
 def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
                       trajectory=True):
     x = np.array(start)
