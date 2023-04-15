@@ -19,18 +19,19 @@ def generate_points(n, dim, f, rg=1):
     return X, np.asarray(y)
 
 
-def poly_mse(X, y, dim, w):
+def poly_mse(X, y, dim, w, reg):
     res = 0
     for i in range(len(X)):
         x = 0
         for j in range(dim):
             x += (X[i] ** j) * w[j]
         res += (y[i][0] - x[0]) ** 2
+    res += reg(w)
     return res / len(X)
 
 
-def mse_func(X, y, dim):
-    return lambda w: poly_mse(X, y, dim, w)
+def mse_func(X, y, dim, reg=lambda w: 0):
+    return lambda w: poly_mse(X, y, dim, w, reg)
 
 
 def grad_calculator(x, func, dim):
@@ -47,36 +48,23 @@ def grad_func(f, dim):
     return lambda x: grad_calculator(x, f, dim)
 
 
-def gradient_descent(x, y, start, grad, learning_rate=lambda epoch: 0.1, eps=1e-6, max_iter=10000):
-    w = np.asarray(start)
-    iter = 0
-    for epoch in range(max_iter):
-        iter += 1
-        sum_v = 0
-        cnt = 0
-        cur_v = grad(w)
-        w = w - learning_rate(epoch) * cur_v
-        sum_v += abs(cur_v)
-        cnt += 1
-        if abs(sum_v / cnt) < eps:
-            break
-    return w, iter
-
-
-func = lambda x: 2 + 1 * x + 3 * x ** 2 - 3 * x ** 3
+func = lambda x: 2 -2*x + 0.4*x**2 +x**3 - 0.35*x**4 + 0.03*x**5
 n = 100
 dim = 1
-f_dim = 4
-rg = 3
+f_dim = 6
+rg = 8
 (X, y) = generate_points(n, dim, func, rg)
+L1 = lambda alpha: lambda weights: alpha * sum(np.abs(weights))
+L2 = lambda alpha: lambda weights: alpha * sum(np.square(weights))
+Elastic = lambda alpha1, alpha2: lambda weights: L1(alpha1)(weights) + L2(alpha2)(weights)
 f = mse_func(X, y, f_dim)
 grad = grad_func(f, f_dim)
 
-lr = lambda x: 0.001
+lr = lambda x: 1
 start = np.zeros(f_dim)
 print("start gr:", grad(start))
 
-(points, iter, _) = methods.gradient_descent(f, grad, start, eps_g=1e-2, learning_rate=lr, max_iter=1000)
+(points, iter, _) = methods.sgd_adam(f, grad, start, eps_g=1e-8, learning_rate=lr, max_iter=100000)
 w = points[-1]
 print("w: {}, iter: {}".format(w, iter))
 
@@ -95,9 +83,8 @@ plt.plot(X, y, 'b.')
 t1 = np.arange(0.0, rg + 0.01, 0.1)
 Y = multiply_x_w(t1, w, f_dim)
 print(Y)
-plt.plot(t1, Y, '-', color='r', label="??", linewidth=3)
-plt.legend()
-plt.title('sgd')
+plt.plot(t1, Y, '-', color='r', linewidth=3)
+plt.title('func1 L2')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.show()
