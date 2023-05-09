@@ -56,10 +56,9 @@ def dogleg_method(gk, Bk, trust_radius):
     return pU + tau * pB_pU
 
 
-def trust_region_dogleg(func, jac, hess, x0, initial_trust_radius=1.0,
-                        max_trust_radius=100.0, eta=0.15, gtol=1e-4,
-                        maxiter=100):
-    xk = x0
+def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust_radius=100.0, eta=0.15, eps=1e-4,
+                        max_iter=1000):
+    xk = start
     trust_radius = initial_trust_radius
     k = 0
     while True:
@@ -70,7 +69,7 @@ def trust_region_dogleg(func, jac, hess, x0, initial_trust_radius=1.0,
         pk = dogleg_method(gk, Bk, trust_radius)
 
         # Actual reduction.
-        act_red = func(xk) - func(xk + pk)
+        act_red = f(xk) - f(xk + pk)
 
         # Predicted reduction.
         pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(Bk, pk)))
@@ -102,11 +101,11 @@ def trust_region_dogleg(func, jac, hess, x0, initial_trust_radius=1.0,
             xk = xk
 
         # Check if the gradient is small enough to stop
-        if np.linalg.norm(gk) < gtol:
+        if np.linalg.norm(gk) < eps:
             break
 
         # Check if we have looked at enough iterations
-        if k >= maxiter:
+        if k >= max_iter:
             break
         k = k + 1
     return xk
