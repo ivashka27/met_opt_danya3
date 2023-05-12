@@ -1,5 +1,6 @@
 import numpy as np
 from math import sqrt
+from lab1.method import wolfe_gradient
 
 
 def jacobian(function, x):
@@ -17,7 +18,7 @@ def jacobian(function, x):
     return jacobian_matrix
 
 
-def gauss_newton(f, x, y, p0, eps, max_iter):
+def gauss_newton(f, x, y, p0, eps=1e-4, max_iter=10000):
     p = p0
     for itr in range(max_iter):
         J = jacobian(f(p), x)
@@ -27,6 +28,7 @@ def gauss_newton(f, x, y, p0, eps, max_iter):
             break
         p = new_p
     return p
+
 
 def dogleg_method(gk, Bk, trust_radius):
     pB = -np.dot(np.linalg.inv(Bk), gk)
@@ -104,3 +106,46 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
             break
         k = k + 1
     return xk
+
+
+def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
+    x = np.array(start)
+    points = [x]
+    grad_calc = 1
+    func_calc = 0
+    gx = grad(x)
+
+    E = np.eye(len(x))
+    H = E
+
+    for epoch in range(max_iter):
+        pk = -np.dot(H, gx)
+
+        lr = 1
+        fx = f(x)
+
+        func_calc += 2
+        grad_calc += 1
+        while not wolfe_gradient.wolfe_conditions(f, fx, grad, gx, x, pk, lr):
+            func_calc += 1
+            grad_calc += 1
+            lr = lr / 2
+
+        xn = x + lr * pk
+        s = xn - x
+        x = xn
+
+        gradn = grad(xn)
+        grad_calc += 1
+
+        y = gradn - gx
+        gx = gradn
+        ro = 1.0 / (np.dot(y, s))
+        A1 = E - ro * s[:, np.newaxis] * y[np.newaxis, :]
+        A2 = E - ro * y[:, np.newaxis] * s[np.newaxis, :]
+        H = np.dot(A1, np.dot(H, A2)) + (ro * s[:, np.newaxis] * s[np.newaxis, :])
+
+        points.append(x)
+        if np.linalg.norm(gx) < eps:
+            break
+    return np.asarray(points), grad_calc, func_calc

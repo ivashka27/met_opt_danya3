@@ -1,10 +1,10 @@
 import numpy as np
 
 
-def wolfe_conditions(f, fx, grad, grx, x, p, t, c1, c2):
-    grxd = np.dot(grx, p)
-    ft = f(x + t * p)
-    gxt = np.dot(grad(x + t * p), p)
+def wolfe_conditions(f, fx, grad, grx, x, d, t, c1=1e-4, c2=0.9):
+    grxd = np.dot(grx, d)
+    ft = f(x + t * d)
+    gxt = np.dot(grad(x + t * d), d)
     armijo = ft <= fx + c1 * t * grxd
     curvature = gxt <= - c2 * grxd
     return armijo and curvature
@@ -24,8 +24,6 @@ def wolfe_gradient(f, grad, start, eps=1e-6, c1=1e-4, c2=0.9, alpha=1, max_iter=
         func_calc += 2
         fx = f(x)
         while not wolfe_conditions(f, fx, grad, gr, x, d, t, c1, c2):
-            grad_calc += 1
-            func_calc += 1
             t = t / 2
         x = x + t * d
         points.append(x)
