@@ -17,21 +17,16 @@ def jacobian(function, x):
     return jacobian_matrix
 
 
-def gauss_newton(x, y, function, jac, eps=1e-6, max_iter=100):
-    x_i = np.asarray(x)
-    for i in range(max_iter):
-        y_pred = function(x_i)
-        r = y - y_pred
-        J = jac(x_i)
-        Jt = J.T
-        JtJ = Jt.dot(J)
-        Jtr = Jt.dot(r)
-        delta = np.linalg.solve(JtJ, Jtr)
-        x_i = x_i + delta
-        if np.sum(delta ** 2) < eps:
+def gauss_newton(f, x, y, p0, eps, max_iter):
+    p = p0
+    for itr in range(max_iter):
+        J = jacobian(f(p), x)
+        dy = y - f(p)(x)
+        new_p = p + np.linalg.inv(J.T @ J) @ J.T @ dy
+        if np.linalg.norm(p - new_p) < eps:
             break
-    return x_i
-
+        p = new_p
+    return p
 
 def dogleg_method(gk, Bk, trust_radius):
     pB = -np.dot(np.linalg.inv(Bk), gk)
