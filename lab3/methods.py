@@ -151,10 +151,10 @@ def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
     return np.asarray(points), grad_calc, func_calc
 
 
-def l_bfgs(f, grad, start, eps, max_iterations=10e4, m=10):
+def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
     xk = start
     c2 = 0.9
-    I = np.identity(xk.size)
+    I = np.identity(len(xk))
     Hk = I
     grad_calc = 1
     func_calc = 0
@@ -190,12 +190,11 @@ def l_bfgs(f, grad, start, eps, max_iterations=10e4, m=10):
         gk = grad(xk)
         pk = -calculate_pk(I, gk)
 
-        # obtain step length by line search
-        lr = 1
         fx = f(xk)
-
         func_calc += 2
         grad_calc += 1
+        # obtain step length by line search
+        lr = 1
         while not wolfe_gradient.wolfe_conditions(f, fx, grad, gk, xk, pk, lr):
             func_calc += 1
             grad_calc += 1
@@ -227,8 +226,3 @@ def l_bfgs(f, grad, start, eps, max_iterations=10e4, m=10):
             return np.asarray(points), grad_calc, func_calc
 
         xk = xk1
-
-
-
-
-

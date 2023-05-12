@@ -30,4 +30,13 @@ def plot_from_start(start):
 
     plotter.multiple_points_over_contour(f, points1, name1="BFGS").show()
 
-plot_from_start([0, 0])
+
+def plot_from_start_l(start):
+    (points1, grad_calc1, func_calc1) = methods.l_bfgs(f, grad, start)
+    print_info("L_BFGS", start, points1, grad_calc1, func_calc1)
+
+    plotter.multiple_points_over_contour(f, points1, name1="L_BFGS").show()
+
+
+# plot_from_start([0, 0])
+plot_from_start_l([0, 0])
