@@ -152,8 +152,7 @@ def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
 
 
 def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
-    xk = start
-    c2 = 0.9
+    xk = np.array(start)
     I = np.identity(len(xk))
     Hk = I
     grad_calc = 1
@@ -199,7 +198,6 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
             func_calc += 1
             grad_calc += 1
             lr = lr / 2
-        # alpha = step_length(f, grad, xk, 1.0, pk, c2)
 
         # update x
         xk1 = xk + lr * pk
