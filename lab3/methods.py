@@ -149,3 +149,86 @@ def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
         if np.linalg.norm(gx) < eps:
             break
     return np.asarray(points), grad_calc, func_calc
+
+
+def l_bfgs(f, grad, start, eps, max_iterations=10e4, m=10):
+    xk = start
+    c2 = 0.9
+    I = np.identity(xk.size)
+    Hk = I
+    grad_calc = 1
+    func_calc = 0
+    funcs = []
+    grads = []
+    points = [xk]
+
+    def calculate_pk(H0, p):
+        m_t = len(funcs)
+        q = grad(xk)
+        a = np.zeros(m_t)
+        b = np.zeros(m_t)
+        for i in reversed(range(m_t)):
+            s = funcs[i]
+            y = grads[i]
+            rho_i = float(1.0 / y.T.dot(s))
+            a[i] = rho_i * s.dot(q)
+            q = q - a[i] * y
+
+        r = H0.dot(q)
+
+        for i in range(m_t):
+            s = funcs[i]
+            y = grads[i]
+            rho_i = float(1.0 / y.T.dot(s))
+            b[i] = rho_i * y.dot(r)
+            r = r + s * (a[i] - b[i])
+
+        return r
+
+    for i in range(max_iterations):
+        # compute search direction
+        gk = grad(xk)
+        pk = -calculate_pk(I, gk)
+
+        # obtain step length by line search
+        lr = 1
+        fx = f(xk)
+
+        func_calc += 2
+        grad_calc += 1
+        while not wolfe_gradient.wolfe_conditions(f, fx, grad, gk, xk, pk, lr):
+            func_calc += 1
+            grad_calc += 1
+            lr = lr / 2
+        # alpha = step_length(f, grad, xk, 1.0, pk, c2)
+
+        # update x
+        xk1 = xk + lr * pk
+        gk1 = grad(xk1)
+        grad_calc += 1
+
+        # define sk and yk for convenience
+        sk = xk1 - xk
+        yk = gk1 - gk
+
+        funcs.append(sk)
+        grads.append(yk)
+        if len(funcs) > m:
+            funcs = funcs[1:]
+            grads = grads[1:]
+
+        # compute H_{k+1} by BFGS update
+        # rho_k = float(1.0 / yk.dot(sk))
+
+        points.append(xk)
+
+        if np.linalg.norm(xk1 - xk) < eps:
+            xk = xk1
+            return np.asarray(points), grad_calc, func_calc
+
+        xk = xk1
+
+
+
+
+
