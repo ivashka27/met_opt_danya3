@@ -141,9 +141,9 @@ def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
         y = gradn - gx
         gx = gradn
         ro = 1.0 / (np.dot(y, s))
-        A1 = E - ro * s[:, np.newaxis] * y[np.newaxis, :]
-        A2 = E - ro * y[:, np.newaxis] * s[np.newaxis, :]
-        H = np.dot(A1, np.dot(H, A2)) + (ro * s[:, np.newaxis] * s[np.newaxis, :])
+        С1 = E - ro * s[:, np.newaxis] * y[np.newaxis, :]
+        С2 = E - ro * y[:, np.newaxis] * s[np.newaxis, :]
+        H = np.dot(С1, np.dot(H, С2)) + (ro * s[:, np.newaxis] * s[np.newaxis, :])
 
         points.append(x)
         if np.linalg.norm(gx) < eps:
@@ -155,7 +155,7 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
     xk = np.array(start)
     I = np.identity(len(xk))
     Hk = I
-    grad_calc = 1
+    grad_calc = 0
     func_calc = 0
     funcs = []
     grads = []
@@ -163,7 +163,7 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
 
     def calculate_pk(H0, p):
         m_t = len(funcs)
-        q = grad(xk)
+        q = p
         a = np.zeros(m_t)
         b = np.zeros(m_t)
         for i in reversed(range(m_t)):
@@ -187,6 +187,7 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
     for i in range(max_iterations):
         # compute search direction
         gk = grad(xk)
+        grad_calc += 1
         pk = -calculate_pk(I, gk)
 
         fx = f(xk)

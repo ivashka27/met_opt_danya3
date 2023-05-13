@@ -7,7 +7,7 @@ np.random.seed(123)
 
 
 def f(x):
-    return 4 * x[0] ** 2 + 9 * x[1] ** 2 - 4 * x[0] * x[1] - 2 * x[0] + 12 * x[1] + 7
+    return 4 * x[0] ** 2 + 9 * x[1] ** 2 - 4 * x[0] * x[1] - 2 * x[0] + 12 * x[1] + 7 - 10 * np.sin(x[0])
 
 
 def grad(x):
@@ -27,16 +27,11 @@ def print_info(name, start, points, grad_calc, func_calc):
 def plot_from_start(start):
     (points1, grad_calc1, func_calc1) = methods.bfgs(f, grad, start)
     print_info("BFGS", start, points1, grad_calc1, func_calc1)
+    (points2, grad_calc2, func_calc2) = methods.l_bfgs(f, grad, start)
+    print_info("L_BFGS", start, points2, grad_calc2, func_calc2)
 
     plotter.multiple_points_over_contour(f, points1, name1="BFGS").show()
+    plotter.multiple_points_over_contour(f, points2, name1="L_BFGS").show()
 
 
-def plot_from_start_l(start):
-    (points1, grad_calc1, func_calc1) = methods.l_bfgs(f, grad, start)
-    print_info("L_BFGS", start, points1, grad_calc1, func_calc1)
-
-    plotter.multiple_points_over_contour(f, points1, name1="L_BFGS").show()
-
-
-# plot_from_start([0, 0])
-plot_from_start_l([0, 0])
+plot_from_start([10, -5])
