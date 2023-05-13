@@ -5,6 +5,7 @@ from lab1.method import wolfe_gradient
 
 def jacobian(function, x):
     n = len(x)
+    print("len(x):", n)
     eps = 1e-6
     jacobian_matrix = np.zeros((n, n))
     for i in range(n):
@@ -22,6 +23,7 @@ def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=10000):
     jac_calc = 0
     func_calc = 0
     p = p0
+    points = [np.asarray(p)]
     for itr in range(max_iter):
         J = jac(f(p), x)
         jac_calc += 1
@@ -31,7 +33,8 @@ def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=10000):
         if np.linalg.norm(p - new_p) < eps:
             break
         p = new_p
-    return p, func_calc, jac_calc
+        points.append(p)
+    return np.asarray(points), func_calc, jac_calc
 
 
 def dogleg_method(gk, Bk, trust_radius):

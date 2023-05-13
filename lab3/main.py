@@ -7,7 +7,7 @@ np.random.seed(123)
 
 
 def f(x):
-    return 4 * x[0] ** 2 + 9 * x[1] ** 2 - 4 * x[0] * x[1] - 2 * x[0] + 12 * x[1] + 7 - 10 * np.sin(x[0])
+    return 4 * x[0] ** 2 + 9 * x[1] ** 2 - 4 * x[0] * x[1] - 2 * x[0] + 12 * x[1] + 7
 
 
 def grad(x):
