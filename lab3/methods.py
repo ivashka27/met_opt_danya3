@@ -18,16 +18,20 @@ def jacobian(function, x):
     return jacobian_matrix
 
 
-def gauss_newton(f, x, y, p0, eps=1e-4, max_iter=10000):
+def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=10000):
+    jac_calc = 0
+    func_calc = 0
     p = p0
     for itr in range(max_iter):
-        J = jacobian(f(p), x)
+        J = jac(f(p), x)
+        jac_calc += 1
         dy = y - f(p)(x)
+        func_calc += 1
         new_p = p + np.linalg.inv(J.T @ J) @ J.T @ dy
         if np.linalg.norm(p - new_p) < eps:
             break
         p = new_p
-    return p
+    return p, func_calc, jac_calc
 
 
 def dogleg_method(gk, Bk, trust_radius):
@@ -58,15 +62,19 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
     xk = start
     trust_radius = initial_trust_radius
     k = 0
+    func_calc = 0
+    jac_calc = 0
     while True:
 
         gk = jac(xk)
+        jac_calc += 1
         Bk = hess(xk)
 
         pk = dogleg_method(gk, Bk, trust_radius)
 
         # Actual reduction.
         act_red = f(xk) - f(xk + pk)
+        func_calc += 2
 
         # Predicted reduction.
         pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(Bk, pk)))
