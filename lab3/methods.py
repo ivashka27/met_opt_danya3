@@ -29,7 +29,7 @@ def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=10000):
         jac_calc += 1
         dy = y - f(p)(x)
         func_calc += 1
-        new_p = p + np.linalg.inv(J.T @ J) @ J.T @ dy
+        new_p = p + np.linalg.pinv(J.T @ J) @ J.T @ dy
         if np.linalg.norm(p - new_p) < eps:
             break
         p = new_p
@@ -38,7 +38,7 @@ def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=10000):
 
 
 def dogleg_method(gk, Bk, trust_radius):
-    pB = -np.dot(np.linalg.inv(Bk), gk)
+    pB = -np.dot(np.linalg.pinv(Bk), gk)
     norm_pB = sqrt(np.dot(pB, pB))
 
     if norm_pB <= trust_radius:
@@ -83,7 +83,7 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
         pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(Bk, pk)))
 
         # Rho.
-        rhok = act_red / pred_red
+
         if pred_red == 0.0:
             rhok = 1e99
         else:
