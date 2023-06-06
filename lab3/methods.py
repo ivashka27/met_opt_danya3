@@ -1,6 +1,9 @@
+import math
+
 import numpy as np
 from math import sqrt
 from lab1.method import wolfe_gradient
+import time
 
 
 def jacobian(function, x):
@@ -18,74 +21,77 @@ def jacobian(function, x):
     return jacobian_matrix
 
 
-def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=10000):
+def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=1000):
+    start_time = time.time()
     jac_calc = 0
     func_calc = 0
     p = p0
     points = [np.asarray(p)]
     for itr in range(max_iter):
-        J = jac(f(p), x)
+        J = jac(p)
         jac_calc += 1
-        dy = y - f(p)(x)
+        r = y - f(p)
         func_calc += 1
-        new_p = p + np.linalg.inv(J.T @ J) @ J.T @ dy
-        if np.linalg.norm(p - new_p) < eps:
+        pseudo_inverse = np.linalg.pinv(J)
+        delta = np.dot(pseudo_inverse, r)
+        p += delta
+        if np.linalg.norm(delta) < eps:
             break
-        p = new_p
         points.append(p)
-    return np.asarray(points), func_calc, jac_calc
+    return np.asarray(points), jac_calc, func_calc, time.time() - start_time
 
 
-def dogleg_method(gk, Bk, trust_radius):
-    pB = -np.dot(np.linalg.inv(Bk), gk)
-    norm_pB = sqrt(np.dot(pB, pB))
+def dogleg_method(gk, hes, trust_radius):
+    pb = -np.dot(np.linalg.inv(hes), gk)
+    norm_pb = np.linalg.norm(pb)
 
-    if norm_pB <= trust_radius:
-        return pB
+    if norm_pb <= trust_radius:
+        return pb
 
-    pU = - (np.dot(gk, gk) / np.dot(gk, np.dot(Bk, gk))) * gk
-    dot_pU = np.dot(pU, pU)
-    norm_pU = sqrt(dot_pU)
+    pu = - (np.dot(gk, gk) / np.dot(gk, np.dot(hes, gk))) * gk
+    dot_pu = np.dot(pu, pu)
+    norm_pu = np.linalg.norm(dot_pu)
 
-    if norm_pU >= trust_radius:
-        return trust_radius * pU / norm_pU
+    if norm_pu >= trust_radius:
+        return trust_radius * pu / norm_pu
 
-    pB_pU = pB - pU
-    dot_pB_pU = np.dot(pB_pU, pB_pU)
-    dot_pU_pB_pU = np.dot(pU, pB_pU)
-    fact = dot_pU_pB_pU ** 2 - dot_pB_pU * (dot_pU - trust_radius ** 2)
-    tau = (-dot_pU_pB_pU + sqrt(fact)) / dot_pB_pU
+    pb_pu = pb - pu
+    dot_pb_pu = np.dot(pb_pu, pb_pu)
+    dot_pu_pb_pu = np.dot(pu, pb_pu)
+    fact = dot_pu_pb_pu ** 2 - dot_pb_pu * (dot_pu - trust_radius ** 2)
+    tau = (-dot_pu_pb_pu + sqrt(fact)) / dot_pb_pu
 
-    return pU + tau * pB_pU
+    return pu + tau * pb_pu
 
 
 def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust_radius=100.0, eta=0.15, eps=1e-4,
                         max_iter=1000):
+    start_time = time.time()
     xk = start
     points = [xk]
     trust_radius = initial_trust_radius
-    k = 0
     func_calc = 0
     jac_calc = 0
-    while True:
+    for k in range(max_iter):
 
         gk = jac(xk)
         jac_calc += 1
-        Bk = hess(xk)
+        hes = hess(xk)
+        jac_calc += 1
 
-        pk = dogleg_method(gk, Bk, trust_radius)
+        pk = dogleg_method(gk, hes, trust_radius)
 
         act_red = f(xk) - f(xk + pk)
         func_calc += 2
 
-        pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(Bk, pk)))
+        pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(hes, pk)))
 
         if pred_red == 0.0:
             rhok = 1e99
         else:
             rhok = act_red / pred_red
 
-        norm_pk = sqrt(np.dot(pk, pk))
+        norm_pk = np.linalg.norm(pk)
 
         if rhok < 0.25:
             trust_radius = 0.25 * norm_pk
@@ -94,22 +100,16 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
                 trust_radius = min(2.0 * trust_radius, max_trust_radius)
             else:
                 trust_radius = trust_radius
-
         if rhok > eta:
             xk = xk + pk
-        else:
-            xk = xk
         points.append(xk)
         if np.linalg.norm(gk) < eps:
             break
-
-        if k >= max_iter:
-            break
-        k = k + 1
-    return np.asarray(points), 0, 0
+    return np.asarray(points), jac_calc, func_calc, time.time() - start_time
 
 
 def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
+    start_time = time.time()
     x = np.array(start)
     points = [x]
     grad_calc = 1
@@ -149,10 +149,11 @@ def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
         points.append(x)
         if np.linalg.norm(gx) < eps:
             break
-    return np.asarray(points), grad_calc, func_calc
+    return np.asarray(points), grad_calc, func_calc, time.time() - start_time
 
 
 def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
+    start_time = time.time()
     xk = np.array(start)
     I = np.identity(len(xk))
     Hk = I
@@ -186,6 +187,7 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
         return r
 
     for i in range(max_iterations):
+        # compute search direction
         gk = grad(xk)
         grad_calc += 1
         pk = -calculate_pk(I, gk)
@@ -199,7 +201,6 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
             grad_calc += 1
             lr = lr / 2
 
-        # update x
         xk1 = xk + lr * pk
         gk1 = grad(xk1)
         grad_calc += 1
@@ -212,11 +213,11 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
         if len(funcs) > m:
             funcs = funcs[1:]
             grads = grads[1:]
-
         points.append(xk)
 
         if np.linalg.norm(xk1 - xk) < eps:
             xk = xk1
-            return np.asarray(points), grad_calc, func_calc
+            break
 
         xk = xk1
+    return np.asarray(points), grad_calc, func_calc, time.time() - start_time

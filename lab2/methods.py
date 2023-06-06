@@ -1,7 +1,7 @@
 import math
 from math import exp
 import numpy as np
-
+import time
 const_learning_rate = lambda epoch: 0.1
 exp_learning_rate = lambda epoch: 0.5 * exp(-0.1 * epoch)
 step_learning_rate = lambda epoch: 0.1 if epoch < 50 else 0.01
@@ -9,6 +9,7 @@ step_learning_rate = lambda epoch: 0.1 if epoch < 50 else 0.01
 
 def gradient_descent_with_direction(x, y, function, learning_rate=lambda epoch: 0.1, eps=1e-6, batch_size=1,
                                     max_iter=10000):
+    start_time = time.time()
     n_samples, n_features = x.shape
     w = np.random.randn(n_features, 1)
     iter = 0
@@ -30,7 +31,7 @@ def gradient_descent_with_direction(x, y, function, learning_rate=lambda epoch: 
             cnt += 1
         if abs(sum_v / cnt) < eps:
             break
-    return w, iter
+    return w, iter, time.time() - start_time
 
 
 def gradient(x_i, y_i, w):
@@ -44,6 +45,7 @@ def stochastic_gradient_descent(x, y, learning_rate=const_learning_rate, eps=1e-
 
 def gradient_descent(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
                       trajectory=True):
+    start_time = time.time()
     x = np.array(start)
 
     points = [x]
@@ -57,11 +59,12 @@ def gradient_descent(f, grad, start, eps_g=1e-6, learning_rate=const_learning_ra
                 points.append(x)
             break
 
-    return np.asarray(points), len(points), 0
+    return np.asarray(points), len(points), 0, time.time() - start_time
 
 
 def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
                       trajectory=True):
+    start_time = time.time()
     x = np.array(start)
 
     points = [x]
@@ -78,11 +81,12 @@ def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const
                 points.append(x)
             break
 
-    return np.asarray(points), len(points), 0
+    return np.asarray(points), len(points), 0, time.time() - start_time
 
 
 def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
                  trajectory=True):
+    start_time = time.time()
     x = np.array(start)
 
     points = [x]
@@ -98,10 +102,11 @@ def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_lear
             if not trajectory:
                 points.append(x)
             break
-    return np.asarray(points), len(points), 0
+    return np.asarray(points), len(points), 0, time.time() - start_time
 
 
 def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000, trajectory=True):
+    start_time = time.time()
     x = np.array(start)
 
     points = [x]
@@ -118,11 +123,12 @@ def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, m
             if not trajectory:
                 points.append(x)
             break
-    return np.asarray(points), len(points), 0
+    return np.asarray(points), len(points), 0, time.time() - start_time
 
 
 def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
                 trajectory=True):
+    start_time = time.time()
     x = np.array(start)
 
     points = [x]
@@ -138,11 +144,12 @@ def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate
             if not trajectory:
                 points.append(x)
             break
-    return np.asarray(points), len(points), 0
+    return np.asarray(points), len(points), 0, time.time() - start_time
 
 
 def sgd_adam(f, grad, start, beta1=0.9, beta2=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate,
              max_iter=10000, trajectory=True):
+    start_time = time.time()
     x = np.array(start)
 
     points = [x]
@@ -167,4 +174,4 @@ def sgd_adam(f, grad, start, beta1=0.9, beta2=0.99, eps_f=1e-8, eps_g=1e-6, lear
             if not trajectory:
                 points.append(x)
             break
-    return np.asarray(points), len(points), 0
+    return np.asarray(points), len(points), 0, time.time() - start_time
