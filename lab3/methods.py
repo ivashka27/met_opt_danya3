@@ -38,8 +38,6 @@ def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=10000):
 
 def dogleg_method(gk, Bk, trust_radius):
     pB = -np.dot(np.linalg.inv(Bk), gk)
-    #print("pB:", pB)
-    #print(np.dot(pB, pB))
     norm_pB = sqrt(np.dot(pB, pB))
 
     if norm_pB <= trust_radius:
@@ -77,44 +75,34 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
 
         pk = dogleg_method(gk, Bk, trust_radius)
 
-        # Actual reduction.
         act_red = f(xk) - f(xk + pk)
         func_calc += 2
 
-        # Predicted reduction.
         pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(Bk, pk)))
-
-        # Rho.
 
         if pred_red == 0.0:
             rhok = 1e99
         else:
             rhok = act_red / pred_red
 
-        # Calculate the Euclidean norm of pk.
         norm_pk = sqrt(np.dot(pk, pk))
 
-        # Rho is close to zero or negative, therefore the trust region is shrunk.
         if rhok < 0.25:
             trust_radius = 0.25 * norm_pk
         else:
-            # Rho is close to one and pk has reached the boundary of the trust region, therefore the trust region is expanded.
             if rhok > 0.75 and norm_pk == trust_radius:
                 trust_radius = min(2.0 * trust_radius, max_trust_radius)
             else:
                 trust_radius = trust_radius
 
-        # Choose the position for the next iteration.
         if rhok > eta:
             xk = xk + pk
         else:
             xk = xk
         points.append(xk)
-        # Check if the gradient is small enough to stop
         if np.linalg.norm(gk) < eps:
             break
 
-        # Check if we have looked at enough iterations
         if k >= max_iter:
             break
         k = k + 1
@@ -198,7 +186,6 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
         return r
 
     for i in range(max_iterations):
-        # compute search direction
         gk = grad(xk)
         grad_calc += 1
         pk = -calculate_pk(I, gk)
@@ -206,7 +193,6 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
         fx = f(xk)
         func_calc += 2
         grad_calc += 1
-        # obtain step length by line search
         lr = 1
         while not wolfe_gradient.wolfe_conditions(f, fx, grad, gk, xk, pk, lr):
             func_calc += 1
@@ -218,7 +204,6 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
         gk1 = grad(xk1)
         grad_calc += 1
 
-        # define sk and yk for convenience
         sk = xk1 - xk
         yk = gk1 - gk
 
@@ -228,10 +213,6 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
             funcs = funcs[1:]
             grads = grads[1:]
 
-        # compute H_{k+1} by BFGS update
-        # rho_k = float(1.0 / yk.dot(sk))
-
-        #print(xk)
         points.append(xk)
 
         if np.linalg.norm(xk1 - xk) < eps:
