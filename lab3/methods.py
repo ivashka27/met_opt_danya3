@@ -1,5 +1,5 @@
 import math
-
+import tracemalloc
 import numpy as np
 from math import sqrt
 from lab1.method import wolfe_gradient
@@ -22,6 +22,8 @@ def jacobian(function, x):
 
 
 def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=1000):
+    tracemalloc.start()
+    memory_start = tracemalloc.get_traced_memory()[1]
     start_time = time.time()
     jac_calc = 0
     func_calc = 0
@@ -38,7 +40,9 @@ def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=1000):
         if np.linalg.norm(delta) < eps:
             break
         points.append(p)
-    return np.asarray(points), jac_calc, func_calc, time.time() - start_time
+    memory = tracemalloc.get_traced_memory()[1] - memory_start
+    tracemalloc.stop()
+    return np.asarray(points), jac_calc, func_calc, time.time() - start_time, memory
 
 
 def dogleg_method(gk, hes, trust_radius):
@@ -66,6 +70,8 @@ def dogleg_method(gk, hes, trust_radius):
 
 def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust_radius=100.0, eta=0.15, eps=1e-4,
                         max_iter=1000):
+    tracemalloc.start()
+    memory_start = tracemalloc.get_traced_memory()[1]
     start_time = time.time()
     xk = start
     points = [xk]
@@ -105,10 +111,14 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
         points.append(xk)
         if np.linalg.norm(gk) < eps:
             break
-    return np.asarray(points), jac_calc, func_calc, time.time() - start_time
+    memory = tracemalloc.get_traced_memory()[1] - memory_start
+    tracemalloc.stop()
+    return np.asarray(points), jac_calc, func_calc, time.time() - start_time, memory
 
 
 def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
+    tracemalloc.start()
+    memory_start = tracemalloc.get_traced_memory()[1]
     start_time = time.time()
     x = np.array(start)
     points = [x]
@@ -149,10 +159,14 @@ def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
         points.append(x)
         if np.linalg.norm(gx) < eps:
             break
-    return np.asarray(points), grad_calc, func_calc, time.time() - start_time
+    memory = tracemalloc.get_traced_memory()[1] - memory_start
+    tracemalloc.stop()
+    return np.asarray(points), grad_calc, func_calc, time.time() - start_time, memory
 
 
 def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
+    tracemalloc.start()
+    memory_start = tracemalloc.get_traced_memory()[1]
     start_time = time.time()
     xk = np.array(start)
     I = np.identity(len(xk))
@@ -220,4 +234,6 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
             break
 
         xk = xk1
-    return np.asarray(points), grad_calc, func_calc, time.time() - start_time
+    memory = tracemalloc.get_traced_memory()[1] - memory_start
+    tracemalloc.stop()
+    return np.asarray(points), grad_calc, func_calc, time.time() - start_time, memory
