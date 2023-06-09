@@ -48,7 +48,7 @@ def stochastic_gradient_descent(x, y, learning_rate=const_learning_rate, eps=1e-
                                            learning_rate, eps, batch_size, max_iter)
 
 
-def gradient_descent(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+def gradient_descent(f, grad, start, eps_g=1e-4, learning_rate=const_learning_rate, max_iter=10000,
                       trajectory=True):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
@@ -70,7 +70,7 @@ def gradient_descent(f, grad, start, eps_g=1e-6, learning_rate=const_learning_ra
     return np.asarray(points), len(points), 0, time.time() - start_time, memory
 
 
-def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-4, learning_rate=const_learning_rate, max_iter=10000,
                       trajectory=True):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
@@ -95,7 +95,7 @@ def sgd_with_momentum(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const
     return np.asarray(points), len(points), 0, time.time() - start_time, memory
 
 
-def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-4, learning_rate=const_learning_rate, max_iter=10000,
                  trajectory=True):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
@@ -120,7 +120,7 @@ def sgd_nesterov(f, grad, start, gamma=0.9, eps_g=1e-6, learning_rate=const_lear
     return np.asarray(points), len(points), 0, time.time() - start_time, memory
 
 
-def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000, trajectory=True):
+def sgd_adagrad(f, grad, start, eps_g=1e-4, learning_rate=const_learning_rate, max_iter=10000, trajectory=True):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
     start_time = time.time()
@@ -145,7 +145,7 @@ def sgd_adagrad(f, grad, start, eps_g=1e-6, learning_rate=const_learning_rate, m
     return np.asarray(points), len(points), 0, time.time() - start_time, memory
 
 
-def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate, max_iter=10000,
+def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-4, learning_rate=const_learning_rate, max_iter=10000,
                 trajectory=True):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
@@ -170,7 +170,7 @@ def sgd_rmsprop(f, grad, start, beta=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate
     return np.asarray(points), len(points), 0, time.time() - start_time, memory
 
 
-def sgd_adam(f, grad, start, beta1=0.9, beta2=0.99, eps_f=1e-8, eps_g=1e-6, learning_rate=const_learning_rate,
+def sgd_adam(f, grad, start, beta1=0.9, beta2=0.99, eps_f=1e-8, eps_g=1e-4, learning_rate=const_learning_rate,
              max_iter=10000, trajectory=True):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]

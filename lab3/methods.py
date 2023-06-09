@@ -6,21 +6,6 @@ from lab1.method import wolfe_gradient
 import time
 
 
-def jacobian(function, x):
-    n = len(x)
-    eps = 1e-6
-    jacobian_matrix = np.zeros((n, n))
-    for i in range(n):
-        x_plus = np.copy(x)
-        x_plus[i] += eps
-        y_plus = function(x_plus)
-        x_minus = np.copy(x)
-        x_minus[i] -= eps
-        y_minus = function(x_minus)
-        jacobian_matrix[:, i] = (y_plus - y_minus) / (2 * eps)
-    return jacobian_matrix
-
-
 def gauss_newton(f, jac, x, y, p0, eps=1e-4, max_iter=1000):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
@@ -53,8 +38,8 @@ def dogleg_method(gk, hes, trust_radius):
         return pb
 
     pu = - (np.dot(gk, gk) / np.dot(gk, np.dot(hes, gk))) * gk
-    dot_pu = np.dot(pu, pu)
-    norm_pu = sqrt(dot_pu)
+    # dot_pu = np.dot(pu, pu)
+    norm_pu = np.linalg.norm(pu)
 
     if norm_pu >= trust_radius:
         return trust_radius * pu / norm_pu
@@ -62,14 +47,14 @@ def dogleg_method(gk, hes, trust_radius):
     pb_pu = pb - pu
     dot_pb_pu = np.dot(pb_pu, pb_pu)
     dot_pu_pb_pu = np.dot(pu, pb_pu)
-    fact = dot_pu_pb_pu ** 2 - dot_pb_pu * (dot_pu - trust_radius ** 2)
+    fact = dot_pu_pb_pu ** 2 - dot_pb_pu * (np.dot(pu, pu) - trust_radius ** 2)
     tau = (-dot_pu_pb_pu + sqrt(fact)) / dot_pb_pu
 
     return pu + tau * pb_pu
 
 
 def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust_radius=100.0, eta=0.15, eps=1e-4,
-                        max_iter=1000):
+                        max_iter=20):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
     start_time = time.time()
@@ -95,15 +80,13 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
         if pred_red != 0.0:
             rhok = act_red / pred_red
 
-        norm_pk = np.linalg.norm(pk)
+        norm_pk = sqrt(np.dot(pk, pk))
 
         if rhok < 0.25:
             trust_radius = 0.25 * norm_pk
-        else:
-            if rhok > 0.75 and norm_pk == trust_radius:
-                trust_radius = min(2.0 * trust_radius, max_trust_radius)
-            else:
-                trust_radius = trust_radius
+        elif rhok > 0.75 and norm_pk == trust_radius:
+            trust_radius = min(2.0 * trust_radius, max_trust_radius)
+
         if rhok > eta:
             xk = xk + pk
         points.append(xk)
