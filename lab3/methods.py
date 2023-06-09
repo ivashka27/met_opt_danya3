@@ -54,7 +54,7 @@ def dogleg_method(gk, hes, trust_radius):
 
     pu = - (np.dot(gk, gk) / np.dot(gk, np.dot(hes, gk))) * gk
     dot_pu = np.dot(pu, pu)
-    norm_pu = np.linalg.norm(dot_pu)
+    norm_pu = sqrt(dot_pu)
 
     if norm_pu >= trust_radius:
         return trust_radius * pu / norm_pu
@@ -91,10 +91,8 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
         func_calc += 2
 
         pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(hes, pk)))
-
-        if pred_red == 0.0:
-            rhok = 1e99
-        else:
+        rhok = 1e99
+        if pred_red != 0.0:
             rhok = act_red / pred_red
 
         norm_pk = np.linalg.norm(pk)
@@ -164,7 +162,7 @@ def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
     return np.asarray(points), grad_calc, func_calc, time.time() - start_time, memory
 
 
-def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
+def l_bfgs(f, grad, start, eps=1e-4, max_iter=10000, m=10):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
     start_time = time.time()
@@ -200,7 +198,7 @@ def l_bfgs(f, grad, start, eps=1e-4, max_iterations=10000, m=10):
 
         return r
 
-    for i in range(max_iterations):
+    for i in range(max_iter):
         # compute search direction
         gk = grad(xk)
         grad_calc += 1
