@@ -38,8 +38,8 @@ def dogleg_method(gk, hes, trust_radius):
         return pb
 
     pu = - (np.dot(gk, gk) / np.dot(gk, np.dot(hes, gk))) * gk
-    # dot_pu = np.dot(pu, pu)
-    norm_pu = np.linalg.norm(pu)
+    dot_pu = np.dot(pu, pu)
+    norm_pu = sqrt(dot_pu)
 
     if norm_pu >= trust_radius:
         return trust_radius * pu / norm_pu
@@ -47,13 +47,13 @@ def dogleg_method(gk, hes, trust_radius):
     pb_pu = pb - pu
     dot_pb_pu = np.dot(pb_pu, pb_pu)
     dot_pu_pb_pu = np.dot(pu, pb_pu)
-    fact = dot_pu_pb_pu ** 2 - dot_pb_pu * (np.dot(pu, pu) - trust_radius ** 2)
+    fact = dot_pu_pb_pu ** 2 - dot_pb_pu * (dot_pu - trust_radius ** 2)
     tau = (-dot_pu_pb_pu + sqrt(fact)) / dot_pb_pu
 
     return pu + tau * pb_pu
 
 
-def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust_radius=100.0, eta=0.15, eps=1e-4,
+def trust_region_dogleg(f, grad, hess, start, initial_trust_radius=1.0, max_trust_radius=100.0, eta=0.15, eps=1e-4,
                         max_iter=20):
     tracemalloc.start()
     memory_start = tracemalloc.get_traced_memory()[1]
@@ -62,23 +62,23 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
     points = [xk]
     trust_radius = initial_trust_radius
     func_calc = 0
-    jac_calc = 0
+    grad_calc = 0
     for k in range(max_iter):
 
-        gk = jac(xk)
-        jac_calc += 1
+        gk = grad(xk)
+        grad_calc += 1
         hes = hess(xk)
-        jac_calc += 1
+        grad_calc += 1
 
         pk = dogleg_method(gk, hes, trust_radius)
 
-        act_red = f(xk) - f(xk + pk)
+        actual_reduction = f(xk) - f(xk + pk)
         func_calc += 2
 
-        pred_red = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(hes, pk)))
+        prediction_reduction = -(np.dot(gk, pk) + 0.5 * np.dot(pk, np.dot(hes, pk)))
         rhok = 1e99
-        if pred_red != 0.0:
-            rhok = act_red / pred_red
+        if prediction_reduction != 0.0:
+            rhok = actual_reduction / prediction_reduction
 
         norm_pk = sqrt(np.dot(pk, pk))
 
@@ -94,7 +94,7 @@ def trust_region_dogleg(f, jac, hess, start, initial_trust_radius=1.0, max_trust
             break
     memory = tracemalloc.get_traced_memory()[1] - memory_start
     tracemalloc.stop()
-    return np.asarray(points), jac_calc, func_calc, time.time() - start_time, memory
+    return np.asarray(points), grad_calc, func_calc, time.time() - start_time, memory
 
 
 def bfgs(f, grad, start, eps=1e-4, max_iter=10000):
